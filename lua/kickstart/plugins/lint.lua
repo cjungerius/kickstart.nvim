@@ -7,7 +7,27 @@ return {
       local lint = require 'lint'
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
+	python = { 'ruff' },
+	r = { 'lintr' },
       }
+
+    -- Define the lintr command
+    lint.linters.lintr = {
+      cmd = 'Rscript',
+      stdin = false,
+      args = {
+        '-e',
+        [[lintr::lint(commandArgs(TRUE))]],
+        '--args',
+        '%filepath',
+      },
+      stream = 'stdout',
+      ignore_exitcode = true,
+      parser = require('lint.parser').from_errorformat('%f:%l:%c: %m', {
+        source = 'lintr',
+      }),
+    }
+
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
       -- instead set linters_by_ft like this:
